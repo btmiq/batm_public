@@ -2429,5 +2429,6 @@
     <extension autoload="false" class="com.generalbytes.batm.server.extensions.extra.examples.rest.RESTExampleExtension" />
     <extension autoload="false" class="com.generalbytes.batm.server.extensions.extra.examples.communication.ExternalCommunicationExampleExtension" />
     <extension autoload="false" class="com.generalbytes.batm.server.extensions.extra.examples.activeTerminals.ActiveTerminalsExtension" />
+    <extension autoload="false" class="com.generalbytes.batm.server.extensions.extra.export.ExportRestService" />
 
 </extensions>
