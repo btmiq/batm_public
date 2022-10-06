@@ -17,13 +17,18 @@
  ************************************************************************************/
 package com.generalbytes.batm.server.extensions.extra.export;
 
+import com.generalbytes.batm.server.extensions.IExtensionContext;
+import com.generalbytes.batm.server.extensions.ITransactionDetails;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
+import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
@@ -51,7 +56,7 @@ public class ExportRestService {
     static {
         //In real world example api and api secrets should not be hardcoded but stored in database or filesystem in encrypted form
         //Same applies to previousNonceByAPIKey
-        apiKeyToAPISecret.put(API_KEY,API_SECRET);
+        apiKeyToAPISecret.put(API_KEY, API_SECRET);
     }
 
 
@@ -62,11 +67,41 @@ public class ExportRestService {
      * Returns JSON response on following URL https://localhost:7743/extensions/export/helloworld
      */
     public Object helloWorld(@Context HttpServletRequest request, @Context HttpServletResponse response, @QueryParam("api_key") String apiKey,  @QueryParam("nonce") String nonce,  @QueryParam("signature") String signature, @QueryParam("serial_number") String serialNumber) {
-        if (!checkSecurity(apiKey, nonce, signature,serialNumber)){
-            return new ExportRestResponse(1, "Access Denied");
-        }
         ExportRestResponse exportRestResponse = new ExportRestResponse(200, ExportRestResponse.SUCCESS);
         exportRestResponse.getData().put("hello", "world");
+        return exportRestResponse;
+    }
+
+    @GET
+    @Path("/transactions")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Object getTransactions(@Context HttpServletRequest request,
+                                  @Context HttpServletResponse response,
+                                  @QueryParam("api_key") String apiKey,
+                                  @QueryParam("nonce") String nonce,
+                                  @QueryParam("signature") String signature,
+                                  @QueryParam("serial_number") String serialNumber,
+                                  @QueryParam("startMillis") String startMillis,
+                                  @QueryParam("endMillis") String endMillis) {
+
+        if (!checkSecurity(apiKey, nonce, signature,serialNumber)) {
+            return new ExportRestResponse(1, "Access Denied");
+        }
+
+        String terminalSerialNumber = "12345";
+        Date serverTimeFrom = new Date(0L);
+        Date serverTimeTo = new Date();
+        String previousRID = "12345";
+        boolean includeBanknotes = true;
+
+        IExtensionContext context = ExportRestExtension.getExtensionContext();
+        List<ITransactionDetails> transactions = context.findTransactions(terminalSerialNumber, serverTimeFrom, serverTimeTo, previousRID, includeBanknotes);
+
+        ExportRestResponse exportRestResponse = new ExportRestResponse(200, ExportRestResponse.SUCCESS);
+        exportRestResponse.getData().put("transactions", transactions.stream()
+            .map(ExportExtensionUtils::ITransactionDetailsToMap)
+            .collect(Collectors.toList()));
+
         return exportRestResponse;
     }
 
