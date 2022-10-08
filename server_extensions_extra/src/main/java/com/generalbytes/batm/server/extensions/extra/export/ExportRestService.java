@@ -66,7 +66,16 @@ public class ExportRestService {
     /**
      * Returns JSON response on following URL https://localhost:7743/extensions/export/helloworld
      */
-    public Object helloWorld(@Context HttpServletRequest request, @Context HttpServletResponse response, @QueryParam("api_key") String apiKey,  @QueryParam("nonce") String nonce,  @QueryParam("signature") String signature, @QueryParam("serial_number") String serialNumber) {
+    public Object helloWorld(@Context HttpServletRequest request,
+                             @Context HttpServletResponse response,
+                             @QueryParam("api_key") String apiKey,
+                             @QueryParam("nonce") String nonce,
+                             @QueryParam("signature") String signature) {
+
+        if (!checkSecurity(apiKey, nonce, signature)) {
+            return new ExportRestResponse(1, "Access Denied");
+        }
+
         ExportRestResponse exportRestResponse = new ExportRestResponse(200, ExportRestResponse.SUCCESS);
         exportRestResponse.getData().put("hello", "world");
         return exportRestResponse;
@@ -84,7 +93,7 @@ public class ExportRestService {
                                   @QueryParam("startMillis") String startMillis,
                                   @QueryParam("endMillis") String endMillis) {
 
-        if (!checkSecurity(apiKey, nonce, signature,serialNumber)) {
+        if (!checkSecurity(apiKey, nonce, signature, serialNumber)) {
             return new ExportRestResponse(1, "Access Denied");
         }
 
