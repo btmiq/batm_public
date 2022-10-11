@@ -1,5 +1,6 @@
 package com.generalbytes.batm.server.extensions.extra.export;
 
+import com.generalbytes.batm.server.extensions.ITerminal;
 import com.generalbytes.batm.server.extensions.ITransactionDetails;
 
 import java.util.LinkedHashMap;
@@ -27,6 +28,23 @@ public class ExportExtensionUtils {
         map.put("relatedRemoteTransactionId", transactionDetails.getRelatedRemoteTransactionId());
         map.put("cellPhoneUsed", transactionDetails.getCellPhoneUsed());
         map.put("rateSourcePrice", transactionDetails.getRateSourcePrice());
+        return map;
+    }
+
+    static Map<String, Object> ITerminalToMap(ITerminal iTerminal) {
+        Map<String, Object> map = new LinkedHashMap<>();
+        map.put("serialNumber", iTerminal.getSerialNumber());
+        map.put("name", iTerminal.getName());
+        map.put("active", iTerminal.isActive());
+        map.put("deleted", iTerminal.isDeleted());
+        map.put("locked", iTerminal.isLocked());
+        map.put("location", iTerminal.getLocation());
+        map.put("lastPing", iTerminal.getLastPingAt());
+        map.put("errors", iTerminal.getErrors());
+        map.put("operationalMode", iTerminal.getOperationalMode());
+        map.put("rejectedReason", iTerminal.getRejectedReason());
+        map.put("allowedCashCurrencies", iTerminal.getAllowedCashCurrencies());
+        map.put("allwowedCryptoCurrencies", iTerminal.getAllowedCryptoCurrencies());
         return map;
     }
 }

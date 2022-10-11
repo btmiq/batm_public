@@ -18,7 +18,9 @@
 package com.generalbytes.batm.server.extensions.extra.export;
 
 import com.generalbytes.batm.server.extensions.IExtensionContext;
+import com.generalbytes.batm.server.extensions.ITerminal;
 import com.generalbytes.batm.server.extensions.ITransactionDetails;
+import com.generalbytes.batm.server.extensions.extra.examples.rest.RESTExampleExtension;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -50,6 +52,8 @@ public class ExportRestService {
     private static final Logger log = LoggerFactory.getLogger(ExportRestService.class);
     public static final String API_KEY      = "P123454S6818ASMSISNSOS2USJAODKMW";
     public static final String API_SECRET   = "SHDDOSMsS5540OK9KD7F53J4EIA2J383";
+    public static final String TERMINALS     = "terminals";
+    public static final String TRANSACATIONS = "transactions";
 
     private static Map<String,Long> previousNonceByAPIKey = new HashMap<>();
     private static Map<String,String> apiKeyToAPISecret = new HashMap<>();
@@ -58,7 +62,6 @@ public class ExportRestService {
         //Same applies to previousNonceByAPIKey
         apiKeyToAPISecret.put(API_KEY, API_SECRET);
     }
-
 
     @GET
     @Path("/helloworld")
@@ -82,7 +85,29 @@ public class ExportRestService {
     }
 
     @GET
-    @Path("/transactions")
+    @Path("/" + TERMINALS)
+    @Produces(MediaType.APPLICATION_JSON)
+    public Object terminals(@Context HttpServletRequest request,
+                            @Context HttpServletResponse response,
+                            @QueryParam("api_key") String apiKey,
+                            @QueryParam("nonce") String nonce,
+                            @QueryParam("signature") String signature) {
+
+        if (!checkSecurity(apiKey, nonce, signature)) {
+            return new ExportRestResponse(1, "Access Denied");
+        }
+
+        List<ITerminal> terminals = RESTExampleExtension.getExtensionContext().findAllTerminals();
+        ExportRestResponse exportRestResponse = new ExportRestResponse(200, ExportRestResponse.SUCCESS);
+        exportRestResponse.getData().put(TERMINALS, terminals.stream()
+            .map(ExportExtensionUtils::ITerminalToMap)
+            .collect(Collectors.toList()));
+
+        return exportRestResponse;
+    }
+
+    @GET
+    @Path("/" + TRANSACATIONS)
     @Produces(MediaType.APPLICATION_JSON)
     public Object getTransactions(@Context HttpServletRequest request,
                                   @Context HttpServletResponse response,

@@ -27,7 +27,7 @@ import java.util.Map;
 public class ExportRestResponse {
 
     static final String SUCCESS = "Success";
-    static final String ERROR = "ERROR";
+    static final String ERROR = "Error";
 
     int responseCode = 200;
     String message;
