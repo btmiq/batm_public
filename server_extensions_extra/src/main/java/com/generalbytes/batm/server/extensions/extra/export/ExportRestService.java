@@ -97,11 +97,22 @@ public class ExportRestService {
             return new ExportRestResponse(1, "Access Denied");
         }
 
-        List<ITerminal> terminals = RESTExampleExtension.getExtensionContext().findAllTerminals();
         ExportRestResponse exportRestResponse = new ExportRestResponse(200, ExportRestResponse.SUCCESS);
-        exportRestResponse.getData().put(TERMINALS, terminals.stream()
-            .map(ExportExtensionUtils::ITerminalToMap)
-            .collect(Collectors.toList()));
+        exportRestResponse.getData().put("terminals", "yay");
+
+        try {
+            List<ITerminal> terminals = ExportRestExtension.getExtensionContext().findAllTerminals();
+            exportRestResponse.getData().put(TERMINALS, terminals.stream()
+                .map(ExportExtensionUtils::ITerminalToMap)
+                .collect(Collectors.toList()));
+
+        } catch (Exception e) {
+            exportRestResponse.setResponseCode(500);
+            exportRestResponse.setMessage(e.getMessage());
+            exportRestResponse.getData().put("errorClass", e.getClass().toString());
+            StackTraceElement ste = e.getStackTrace()[0];
+            exportRestResponse.getData().put("lastCall", ste.toString());
+        }
 
         return exportRestResponse;
     }
