@@ -28,6 +28,7 @@ public class ExportRestResponse {
 
     static final String SUCCESS = "Success";
     static final String ERROR = "Error";
+    static final String RECEIVED = "Received";
 
     int responseCode = 200;
     String message;

@@ -97,14 +97,15 @@ public class ExportRestService {
             return new ExportRestResponse(1, "Access Denied");
         }
 
-        ExportRestResponse exportRestResponse = new ExportRestResponse(200, ExportRestResponse.SUCCESS);
-        exportRestResponse.getData().put("terminals", "yay");
+        ExportRestResponse exportRestResponse = new ExportRestResponse(0, ExportRestResponse.RECEIVED);
 
         try {
             List<ITerminal> terminals = ExportRestExtension.getExtensionContext().findAllTerminals();
             exportRestResponse.getData().put(TERMINALS, terminals.stream()
                 .map(ExportExtensionUtils::ITerminalToMap)
                 .collect(Collectors.toList()));
+            exportRestResponse.setResponseCode(200);
+            exportRestResponse.setMessage(ExportRestResponse.SUCCESS);
 
         } catch (Exception e) {
             exportRestResponse.setResponseCode(500);
