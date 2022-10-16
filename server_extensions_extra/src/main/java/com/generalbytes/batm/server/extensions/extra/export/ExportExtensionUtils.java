@@ -44,7 +44,7 @@ public class ExportExtensionUtils {
         map.put("operationalMode", iTerminal.getOperationalMode());
         map.put("rejectedReason", iTerminal.getRejectedReason());
         map.put("allowedCashCurrencies", iTerminal.getAllowedCashCurrencies());
-        map.put("allwowedCryptoCurrencies", iTerminal.getAllowedCryptoCurrencies());
+        map.put("allowedCryptoCurrencies", iTerminal.getAllowedCryptoCurrencies());
         return map;
     }
 }
