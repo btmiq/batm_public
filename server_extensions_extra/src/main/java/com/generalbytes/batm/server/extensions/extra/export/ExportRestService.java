@@ -93,7 +93,7 @@ public class ExportRestService {
                             @QueryParam("signature") String signature) {
 
         if (!checkSecurity(apiKey, nonce, signature)) {
-            return new ExportRestResponse(1, "Access Denied");
+            return new ExportRestResponse(401, "Access Denied");
         }
 
         ExportRestResponse exportRestResponse = new ExportRestResponse(0, ExportRestResponse.RECEIVED);
@@ -130,7 +130,7 @@ public class ExportRestService {
                                   @QueryParam("endMillis") String endMillis) {
 
         if (!checkSecurity(apiKey, nonce, signature, serialNumber)) {
-            return new ExportRestResponse(1, "Access Denied");
+            return new ExportRestResponse(401, "Access Denied");
         }
 
         String terminalSerialNumber = "12345";
