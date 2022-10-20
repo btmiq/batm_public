@@ -20,7 +20,6 @@ package com.generalbytes.batm.server.extensions.extra.export;
 import com.generalbytes.batm.server.extensions.IExtensionContext;
 import com.generalbytes.batm.server.extensions.ITerminal;
 import com.generalbytes.batm.server.extensions.ITransactionDetails;
-import com.generalbytes.batm.server.extensions.extra.examples.rest.RESTExampleExtension;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
