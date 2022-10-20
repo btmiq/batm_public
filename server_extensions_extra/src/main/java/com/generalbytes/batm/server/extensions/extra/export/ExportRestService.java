@@ -53,7 +53,7 @@ public class ExportRestService {
     public static final String API_KEY      = "P123454S6818ASMSISNSOS2USJAODKMW";
     public static final String API_SECRET   = "SHDDOSMsS5540OK9KD7F53J4EIA2J383";
     public static final String TERMINALS     = "terminals";
-    public static final String TRANSACATIONS = "transactions";
+    public static final String TRANSACTIONS = "transactions";
 
     private static Map<String,Long> previousNonceByAPIKey = new HashMap<>();
     private static Map<String,String> apiKeyToAPISecret = new HashMap<>();
@@ -119,7 +119,7 @@ public class ExportRestService {
     }
 
     @GET
-    @Path("/" + TRANSACATIONS)
+    @Path("/" + TRANSACTIONS)
     @Produces(MediaType.APPLICATION_JSON)
     public Object getTransactions(@Context HttpServletRequest request,
                                   @Context HttpServletResponse response,
