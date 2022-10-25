@@ -126,26 +126,53 @@ public class ExportRestService {
                                   @QueryParam("nonce") String nonce,
                                   @QueryParam("signature") String signature,
                                   @QueryParam("serial_number") String serialNumber,
-                                  @QueryParam("startMillis") String startMillis,
-                                  @QueryParam("endMillis") String endMillis) {
+                                  @QueryParam("previous_rid") String previousRID,
+                                  @QueryParam("start_millis") String startMillis,
+                                  @QueryParam("end_millis") String endMillis) {
 
         if (!checkSecurity(apiKey, nonce, signature, serialNumber)) {
             return new ExportRestResponse(401, "Access Denied");
         }
 
-        String terminalSerialNumber = "12345";
-        Date serverTimeFrom = new Date(0L);
-        Date serverTimeTo = new Date();
-        String previousRID = "12345";
+        if (serialNumber == null || "".equals(serialNumber)) {
+            return new ExportRestResponse(400, "[serial_number] is Required!");
+        }
+
+        Date serverTimeFrom;
+        Date serverTimeTo;
+        try {
+            serverTimeFrom = new Date(Long.parseLong(startMillis));
+        } catch (NumberFormatException e) {
+            serverTimeFrom = new Date(0L);
+        }
+
+        try {
+            serverTimeTo = new Date(Long.parseLong(endMillis));
+        } catch (NumberFormatException e) {
+            serverTimeTo = new Date();
+        }
+
         boolean includeBanknotes = true;
 
-        IExtensionContext context = ExportRestExtension.getExtensionContext();
-        List<ITransactionDetails> transactions = context.findTransactions(terminalSerialNumber, serverTimeFrom, serverTimeTo, previousRID, includeBanknotes);
+        ExportRestResponse exportRestResponse = new ExportRestResponse(0, ExportRestResponse.RECEIVED);
 
-        ExportRestResponse exportRestResponse = new ExportRestResponse(200, ExportRestResponse.SUCCESS);
-        exportRestResponse.getData().put("transactions", transactions.stream()
-            .map(ExportExtensionUtils::ITransactionDetailsToMap)
-            .collect(Collectors.toList()));
+        try {
+            IExtensionContext context = ExportRestExtension.getExtensionContext();
+            List<ITransactionDetails> transactions = context.findTransactions(serialNumber, serverTimeFrom, serverTimeTo, previousRID, includeBanknotes);
+
+            exportRestResponse.getData().put("transactions", transactions.stream()
+                .map(ExportExtensionUtils::ITransactionDetailsToMap)
+                .collect(Collectors.toList()));
+            exportRestResponse.setResponseCode(200);
+            exportRestResponse.setMessage(ExportRestResponse.SUCCESS);
+
+        } catch (Exception e) {
+            exportRestResponse.setResponseCode(500);
+            exportRestResponse.setMessage(e.getMessage());
+            exportRestResponse.getData().put("errorClass", e.getClass().toString());
+            StackTraceElement ste = e.getStackTrace()[0];
+            exportRestResponse.getData().put("lastCall", ste.toString());
+        }
 
         return exportRestResponse;
     }
